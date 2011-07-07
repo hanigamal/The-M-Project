@@ -88,3 +88,15 @@
 .tmp-actionsheet-destructive-button:active {
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.05, rgb(235, 104, 87)), color-stop(1.0, rgb(245, 46, 19)));
 }
+
+/* Tab Bar */
+.tmp-page-tabbar-footer {
+    position: relative !important;
+    top: 0px !important;
+}
+
+.tmp-tabbar-footer {
+    position: fixed !important;
+    bottom: 0px !important;
+    z-index: 2000;
+}

@@ -112,6 +112,14 @@ M.Application = M.Object.extend(
     applicationTitle: '',
 
     /**
+     * This property can be used to specify the application's tab bar. So if you want an application
+     * to be tab bar based, provide a valid M.TabBarView by setting this property.
+     *
+     * @type M.TabBarView
+     */
+    tabBar: null,
+
+    /**
      * This method encapsulates the 'include' method of M.Object for better reading of code syntax.
      * Basically it integrates the defined pages within the application into M.Application and sets
      * some basic configuration properties, e.g. the default language.
@@ -130,6 +138,7 @@ M.Application = M.Object.extend(
         });
 
         this.entryPage = ((obj.entryPage && typeof(obj.entryPage) === 'string') ? obj.entryPage : null);
+        this.tabBar = ((obj.tabBar && obj.tabBar.type === 'M.TabBarView') ? obj.tabBar : null);
 
         return this;
     },
@@ -144,6 +153,21 @@ M.Application = M.Object.extend(
 
         /* get the application's title */
         this.applicationTitle = document.title;
+
+        /* do we have a tab bar? part 1 */
+        if(this.tabBar && this.tabBar.type === 'M.TabBarView') {
+            /* add special css class to every page */
+            _.each(this.viewManager.pageList, function(page) {
+                var cssClass = 'tmp-page-tabbar-' + that.tabBar.anchorLocation;
+                page.cssClass = page.cssClass ? page.cssClass + ' ' + cssClass : cssClass;
+            });
+
+            /* render the tab bar and add it */
+            document.write(this.tabBar.render());
+            $('#' + this.tabBar.id).page();
+            $('#' + this.tabBar.id).addClass('tmp-tabbar-' + that.tabBar.anchorLocation);
+            this.tabBar.registerEvents();
+        }
 
         /* first lets get the entry page and remove it from pagelist and viewlist */
         var entryPage = M.ViewManager.getPage(M.Application.entryPage);
@@ -165,6 +189,13 @@ M.Application = M.Object.extend(
         /* finally add entry page back to pagelist and view list, but with new key 'm_entryPage' */
         this.viewManager.viewList['m_entryPage'] = entryPage;
         this.viewManager.pageList['m_entryPage'] = entryPage;
+
+        /* do we have a tab bar? part 2 */
+        if(this.tabBar && this.tabBar.type === 'M.TabBarView') {
+            _.each(this.viewManager.pageList, function(page) {
+                $('#' + page.id).css('margin-bottom', $('#' + that.tabBar.id).outerHeight() + 'px');
+            });
+        }
     }
 
 });
